@@ -32,18 +32,18 @@ export default {
     }
   },
   methods: {
-    deleteTask(id) {
-      if (confirm('Are you sure?'))
-        this.tasks = this.tasks.filter((task) => task.id !== id)
-    },
-    toggleReminder(id) {
-      this.tasks = this.tasks.map((task) => task.id == id ? {...task, reminder: !task.reminder} : task)
-    },
-    addTask(task) {
-      this.tasks = [...this.tasks, task]
-    },
-    toggleAddTask() {
-      this.showAddTask = !this.showAddTask
+    async addTask(task) {
+      const res = await fetch('api/tasks', {
+        method:'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(task)
+      })
+
+      const data = await res.json()
+
+      this.tasks = [...this.tasks, data]
     },
     async fetchTasks() {
       const res = await fetch('api/tasks')
@@ -58,6 +58,16 @@ export default {
       const data = await res.json()
 
       return data
+    },
+    deleteTask(id) {
+      if (confirm('Are you sure?'))
+        this.tasks = this.tasks.filter((task) => task.id !== id)
+    },
+    toggleReminder(id) {
+      this.tasks = this.tasks.map((task) => task.id == id ? {...task, reminder: !task.reminder} : task)
+    },
+    toggleAddTask() {
+      this.showAddTask = !this.showAddTask
     },
   },
   async created() {
